@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  songs     Song[]
+  playlists Playlist[]
+  
+  @@map("users")
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  artist      String?
+  album       String?
+  duration    Int      // Duration in seconds
+  filePath    String   // Path to the processed audio file
+  originalPath String  // Path to the original uploaded file
+  coverArt    String?  // Path to cover art image (optional)
+  genre       String?
+  year        Int?
+  fileSize    Int      // File size in bytes
+  status      SongStatus @default(PROCESSING)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  playlistSongs PlaylistSong[]
+  
+  @@map("songs")
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  songs      PlaylistSong[]
+  
+  @@map("playlists")
+}
+
+model PlaylistSong {
+  id         String   @id @default(cuid())
+  playlistId String
+  songId     String
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  
+  playlist   Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song       Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  
+  @@unique([playlistId, songId])
+  @@map("playlist_songs")
+}
+
+enum SongStatus {
+  PROCESSING
+  READY
+  ERROR
+}
