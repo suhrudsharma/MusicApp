@@ -29,7 +29,7 @@ model Song {
   title       String
   artist      String?
   album       String?
-  duration    Int      // Duration in seconds
+  duration    Int?      // Duration in seconds
   filePath    String   // Path to the processed audio file
   originalPath String  // Path to the original uploaded file
   coverArt    String?  // Path to cover art image (optional)

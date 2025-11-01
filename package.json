@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:worker": "ts-node-dev --respawn worker.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
